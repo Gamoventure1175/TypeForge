@@ -1,5 +1,13 @@
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import List
+
+
+class SessionState(Enum):
+    IDLE = "idle"
+    RUNNING = "running"
+    FINISHED = "finished"
+    ABORTED = "aborted"
 
 
 @dataclass(frozen=True)
@@ -14,9 +22,7 @@ class TypingState:
     correct_chars: int
     accuracy: float
     wpm: float
-    is_finished: bool
-    # TODO: include the test quiting state
-    # is_aborted: bool
+    session_state: SessionState
 
     def __post_init__(self):
         if not (0 <= self.accuracy <= 100):

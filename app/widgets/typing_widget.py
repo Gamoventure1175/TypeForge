@@ -2,11 +2,7 @@ from textual.widgets import Static
 from textual import events
 
 from engine import TypingEngine
-from models import (
-    CharacterTyped,
-    BackspacePressed,
-    TestQuit,
-)
+from models import CharacterTyped, BackspacePressed, TestQuit, SessionState
 from models import TypingState
 
 
@@ -25,7 +21,7 @@ class TypingWidget(Static):
             correct_chars=0,
             accuracy=0,
             wpm=0,
-            is_finished=False,
+            session_state=SessionState.IDLE,
         )
 
     def on_mount(self):
@@ -53,13 +49,19 @@ class TypingWidget(Static):
             return
 
         # Process event through engine
-        self.state = self.engine.process_event(
-            self.state,
-            domain_event,
-        )
+        try:
+            self.state = self.engine.process_event(
+                self.state,
+                domain_event,
+            )
+        except:
+            pass
 
-        # Refresh UI
-        self.refresh()
+        if self.state.session_state == SessionState.FINISHED:
+            pass
+        else:
+            # Refresh UI
+            self.refresh()
 
     def render(self):
 

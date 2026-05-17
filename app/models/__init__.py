@@ -1,4 +1,4 @@
-from .typing_models import TypingState, TypingStats
+from .typing_models import TypingState, TypingStats, SessionState
 from .events import (
     Event,
     CharacterTyped,
@@ -15,4 +15,5 @@ __all__ = [
     "BackspacePressed",
     "TestFinished",
     "TestQuit",
+    "SessionState",
 ]
