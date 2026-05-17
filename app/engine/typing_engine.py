@@ -1,25 +1,21 @@
 from time import time, perf_counter
-from .utils import calculate_accuracy, calculate_wpm, count_correct_chars
+from .utils.typing_utils import calculate_accuracy, calculate_wpm, count_correct_chars
 from models import (
-    BackspacePressed,
-    CharacterTyped,
-    Event,
     SessionState,
-    TestFinished,
-    TestQuit,
     TypingState,
     TypingStats,
 )
 from dataclasses import replace
-from .policies.typing_policies import TypingPolicy
+from .policies.typing_policies import setup_policy
 
 
-class TypingEngine:
+class _TypingEngine:
 
     def __init__(self):
         self._start_time: float | None = None
         self._end_time: float | None = None
         self._last_input_time: float | None = None
+        self._typing_policies = setup_policy()
 
     def start(self):
         "Starts the current session for the typing test"
@@ -28,15 +24,13 @@ class TypingEngine:
         self._last_input_time = now
 
     def finish(self, state: TypingState) -> TypingState:
-        "Completes the typing test and returns the finished state"
+        "Ends the current session for the typing test"
         if state.session_state == SessionState.FINISHED:
             return state
 
-        self._end_time = time()
+        self._end_time = perf_counter()
 
-        new_state = replace(state, session_state=SessionState.FINISHED)
-
-        return self._build_state(new_state, "")
+        return self._build_state(state, session_state=SessionState.FINISHED)
 
     def process_char(self, state: TypingState, char: str) -> TypingState:
         """
@@ -49,17 +43,19 @@ class TypingEngine:
         if state.session_state == SessionState.FINISHED:
             raise RuntimeError("Cannot type after a test is finished.")
 
-        if self._start_time is None:
-            self._start_time = time()
-
         # Don't allow typing beyond chars in target
         if len(state.typed) >= len(state.target):
             return self.finish(state)
 
-        new_typed = state.typed + char
-        temp_state = replace(state, session_state=SessionState.RUNNING)
+        if self._start_time is None:
+            self.start()
 
-        new_state = self._build_state(temp_state, new_typed)
+        new_typed = state.typed + char
+        self._last_input_time = perf_counter()
+
+        new_state = self._build_state(
+            state, typed=new_typed, session_state=SessionState.RUNNING
+        )
 
         return new_state
 
@@ -72,9 +68,11 @@ class TypingEngine:
             return state
 
         new_typed = state.typed[:-1]
-        temp_state = replace(state, session_state=SessionState.RUNNING)
+        self._last_input_time = perf_counter()
 
-        return self._build_state(temp_state, new_typed)
+        return self._build_state(
+            state, typed=new_typed, session_state=SessionState.RUNNING
+        )
 
     # TODO: implement the actual test quiting behaviour
     def quit(self, state: TypingState) -> TypingState:
@@ -93,27 +91,9 @@ class TypingEngine:
 
         return TypingStats(correct_chars, accuracy, wpm)
 
-    def process_event(self, state: TypingState, event: Event) -> TypingState:
-        match event:
-
-            case CharacterTyped(char):
-                return self.process_char(state, event.char)
-
-            case BackspacePressed():
-                return self.process_backspace(state)
-
-            case TestFinished():
-                return self.finish(state)
-
-            case TestQuit():
-                return self.finish(state)
-
-            case _:
-                raise ValueError(f"Unhandled event: {event}")
-
-    def _build_state(self, previous_state: TypingState, typed: str) -> TypingState:
+    def _build_state(self, previous_state: TypingState, **changes) -> TypingState:
         "Centralized state derivation pipeline"
-        temp_state = replace(previous_state, typed=typed)
+        temp_state = replace(previous_state, **changes)
 
         stats = self.calculate_stats(temp_state)
 
@@ -135,3 +115,8 @@ class TypingEngine:
         end = self._end_time or time()
 
         return end - self._start_time
+
+
+class Controller:
+    def __init__(self):
+        self._typing_engine = _TypingEngine()

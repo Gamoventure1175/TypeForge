@@ -1,3 +1,3 @@
-from .typing_engine import TypingEngine
+from .typing_engine import Controller
 
-__all__ = ["TypingEngine"]
+__all__ = ["Controller"]
