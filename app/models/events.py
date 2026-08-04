@@ -1,9 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from time import perf_counter
 
 
 @dataclass(frozen=True)
 class Event:
-    pass
+    timestamp: float = field(default_factory=perf_counter)
 
 
 @dataclass(frozen=True)
@@ -17,10 +18,15 @@ class BackspacePressed(Event):
 
 
 @dataclass(frozen=True)
-class TestFinished(Event):
+class EscPressed(Event):
     pass
 
 
-@dataclass(frozen=True)
-class TestQuit(Event):
-    pass
+# @dataclass(frozen=True)
+# class TestFinished(Event):
+#     pass
+#
+#
+# @dataclass(frozen=True)
+# class TestQuit(Event):
+#     pass
