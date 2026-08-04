@@ -10,7 +10,7 @@ from events import Event, CharacterTyped, BackspacePressed, EscPressed
 from policies.typing_policies import setup_policy
 
 
-class _TypingEngine:
+class TypingEngine:
     def __init__(self):
         self._start_time: float | None = None
         self._end_time: float | None = None
@@ -120,10 +120,10 @@ class _TypingEngine:
         return end - self._start_time
 
 
-class Controller:
-    def __init__(self):
-        self._typing_engine = _TypingEngine()
-        self._typing_policies = setup_policy()
-
-    def process_event(event: Event) -> TypingState:
-        pass
+# class Controller:
+#     def __init__(self):
+#         self._typing_engine = _TypingEngine()
+#         self._typing_policies = setup_policy()
+#
+#     def process_event(event: Event) -> TypingState:
+#         pass

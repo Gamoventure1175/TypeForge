@@ -22,11 +22,11 @@ class EscPressed(Event):
     pass
 
 
-# @dataclass(frozen=True)
-# class TestFinished(Event):
-#     pass
-#
-#
-# @dataclass(frozen=True)
-# class TestQuit(Event):
-#     pass
+@dataclass(frozen=True)
+class SessionStarted(Event):
+    pass
+
+
+@dataclass(frozen=True)
+class SessionFinished(Event):
+    pass
