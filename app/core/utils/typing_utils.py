@@ -1,3 +1,6 @@
+from events import BackspacePressed
+
+
 # ----------------- STATS ----------------------
 def calculate_accuracy(correct_chars: int, total_typed: int) -> float:
     if total_typed <= 0:
@@ -48,3 +51,7 @@ def is_leading_space(typed: str) -> bool:
 
 def is_double_space(typed: str) -> bool:
     return "  " in typed
+
+
+def is_backspace(event: None | BackspacePressed) -> bool:
+    return bool(event)

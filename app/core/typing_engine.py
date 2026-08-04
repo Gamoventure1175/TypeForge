@@ -1,21 +1,20 @@
-from time import time, perf_counter
-from .utils.typing_utils import calculate_accuracy, calculate_wpm, count_correct_chars
+from dataclasses import replace
+from time import perf_counter
 from models import (
     SessionState,
     TypingState,
     TypingStats,
 )
-from dataclasses import replace
-from .policies.typing_policies import setup_policy
+from utils.typing_utils import calculate_accuracy, calculate_wpm, count_correct_chars
+from events import Event, CharacterTyped, BackspacePressed, EscPressed
+from policies.typing_policies import setup_policy
 
 
 class _TypingEngine:
-
     def __init__(self):
         self._start_time: float | None = None
         self._end_time: float | None = None
         self._last_input_time: float | None = None
-        self._typing_policies = setup_policy()
 
     def start(self):
         "Starts the current session for the typing test"
@@ -74,10 +73,14 @@ class _TypingEngine:
             state, typed=new_typed, session_state=SessionState.RUNNING
         )
 
-    # TODO: implement the actual test quiting behaviour
     def quit(self, state: TypingState) -> TypingState:
         "Aborts / Quits the test"
-        ...
+        if not self._start_time:
+            raise ValueError("Cannot quit a null session")
+
+        self._end_time = perf_counter()
+
+        return self._build_state(state, session_state=SessionState.ABORTED)
 
     def calculate_stats(self, state: TypingState) -> TypingStats:
         "Calculate derived typing statistics"
@@ -112,7 +115,7 @@ class _TypingEngine:
         if self._start_time is None:
             return 0
 
-        end = self._end_time or time()
+        end = self._end_time or perf_counter()
 
         return end - self._start_time
 
@@ -120,3 +123,7 @@ class _TypingEngine:
 class Controller:
     def __init__(self):
         self._typing_engine = _TypingEngine()
+        self._typing_policies = setup_policy()
+
+    def process_event(event: Event) -> TypingState:
+        pass
