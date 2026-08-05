@@ -4,15 +4,10 @@ from models.events import Event, CharacterTyped, BackspacePressed, EscPressed
 
 
 def is_valid_transition(
-    policy: TypingPolicy, previous_state: TypingState, str, event: Event
+    policy: TypingPolicy, previous_state: TypingState, event: Event
 ) -> bool:
     match event:
         case CharacterTyped(char):
-            if not policy.allow_extra_characters and len(previous_state.typed) >= len(
-                previous_state.target
-            ):
-                return False
-
             if (
                 not policy.allow_leading_spaces
                 and not previous_state.typed

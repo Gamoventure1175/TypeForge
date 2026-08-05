@@ -28,5 +28,5 @@ class SessionStarted(Event):
 
 
 @dataclass(frozen=True)
-class SessionFinished(Event):
+class SessionEnded(Event):
     pass
