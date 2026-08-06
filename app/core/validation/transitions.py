@@ -1,5 +1,5 @@
-from models.typing_models import TypingState
-from core.policies.typing_policies import TypingPolicy
+from models.typing import TypingState
+from core.policies.typing import TypingPolicy
 from models.events import Event, CharacterTyped, BackspacePressed, EscPressed
 
 

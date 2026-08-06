@@ -1,4 +1,4 @@
-from models import CharacterTyped
+from models.events import CharacterTyped
 
 
 def is_space(event: CharacterTyped) -> bool:

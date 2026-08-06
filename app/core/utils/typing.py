@@ -1,4 +1,4 @@
-from events import BackspacePressed
+from models.events import BackspacePressed
 
 
 # ----------------- STATS ----------------------
