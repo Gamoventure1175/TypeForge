@@ -1,6 +1,6 @@
 from textual.app import App
 
-from screens import TypingScreen
+from screens.screen import TypingScreen
 
 
 class TypingApp(App):
