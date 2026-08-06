@@ -1,10 +1,9 @@
 from textual.app import ComposeResult
 from textual.screen import Screen
 
-from widgets import TypingWidget
+from widgets.typing_area import TypingArea
 
 
 class TypingScreen(Screen):
-
     def compose(self) -> ComposeResult:
-        yield TypingWidget()
+        yield TypingArea()
