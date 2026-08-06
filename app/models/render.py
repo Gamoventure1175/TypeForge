@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import List
 
 
 @dataclass(frozen=True)
@@ -11,7 +10,7 @@ class RenderCharacter:
 
 @dataclass(frozen=True)
 class TypingRenderState:
-    characters: List[RenderCharacter]
+    characters: list[RenderCharacter]
     wpm: int
     accuracy: int
     session_state: str

@@ -4,7 +4,7 @@ from time import perf_counter
 
 @dataclass(frozen=True)
 class Event:
-    timestamp: float = field(default_factory=perf_counter)
+    timestamp: float = field(default_factory=perf_counter, init=False)
 
 
 @dataclass(frozen=True)
